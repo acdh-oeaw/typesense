@@ -89,9 +89,8 @@ Deployment is triggered by:
 
 The workflow:
 1. loads the kubeconfig
-2. creates or updates the `typesense-secret`
-3. applies all Kubernetes manifests (00–05)
-4. waits for the Deployment rollout to complete
+2. applies Kubernetes manifests (03–05)
+3. waits for the Deployment rollout to complete
 
 ---
 
