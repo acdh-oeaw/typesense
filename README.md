@@ -204,10 +204,10 @@ curl https://domain/health
 
 ✅ Status
 
-✅ production ready
-✅ safe for redeploys
-✅ no data loss
-✅ compatible with Ceph RBD
+- ✅ production ready
+- ✅ safe for redeploys
+- ✅ no data loss
+- ✅ compatible with Ceph RBD
 
 📌 References
 
