@@ -69,7 +69,6 @@ The setup is designed to be:
 | Name | Description |
 |----|----|
 | `C2_KUBE_CONFIG` | Base64-encoded kubeconfig |
-| `TYPESENSE_API_KEY` | **ADMIN** API key for Typesense |
 
 ### GitHub Variables (optional)
 
