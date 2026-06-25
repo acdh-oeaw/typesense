@@ -158,7 +158,7 @@ Malformed scoped API key
 Scoped API keys can only be used for searches
 ```
 
-🛠️ Operations & maintenance
+## 🛠️ Operations & maintenance
 Upgrade Typesense version
 
 1. Update the image tag in 03-deployment-typesense.yaml
