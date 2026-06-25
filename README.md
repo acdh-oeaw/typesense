@@ -8,7 +8,7 @@ The setup is designed to be:
 - ✅ **Safe for redeploys**
 - ✅ **Compatible with Ceph RBD (ReadWriteOnce)**
 - ✅ **Fully automated via GitHub Actions**
-- ✅ **TLS-enabled using cert-manager and Let’s Encrypt**
+- ✅ **TLS-enabled using cert-manager**
 
 ---
 
