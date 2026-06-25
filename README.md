@@ -25,6 +25,7 @@ The setup is designed to be:
 
 ## 📁 Repository structure
 
+```text
 .
 ├── .github/
 │   └── workflows/
@@ -32,11 +33,13 @@ The setup is designed to be:
 ├── k8s/
 │   ├── 00-namespace.yaml       # Namespace (typesense)
 │   ├── 01-pvc-typesense.yaml   # PVC (Ceph RBD)
-│   ├── 02-secret-typesense.yaml# Secret (TYPESENSE_API_KEY)
+│   ├── 02-secret-typesense.yaml # Secret (TYPESENSE_API_KEY)
 │   ├── 03-deployment-typesense.yaml
 │   ├── 04-service-typesense.yaml
 │   └── 05-ingress-typesense.yaml
 └── README.md
+```
+
 
 ---
 
@@ -95,42 +98,43 @@ The workflow:
 ```bash
 kubectl apply -f k8s/00-namespace.yaml
 kubectl apply -f k8s/01-pvc-typesense.yaml
+kubectl apply -f k8s/02-secret-typesense.yaml
 ```
 
 # (perform manual data migration here if needed)
 
 ```bash
-kubectl apply -f k8s/02-secret-typesense.yaml
 kubectl apply -f k8s/03-deployment-typesense.yaml
 kubectl apply -f k8s/04-service-typesense.yaml
 kubectl apply -f k8s/05-ingress-typesense.yaml
 ```
 
-🌐 Ingress & TLS
+## 🌐 Ingress & TLS
 
-Host: https://typesense.*
-TLS: cert-manager + letsencrypt-prod
-TLS secret: typesense-*-tls
+- Host: `https://typesense.*`
+- TLS: `cert-manager + letsencrypt-prod`
+- TLS secret: `typesense-*-tls`
 
 The Ingress is tuned for:
 
-long-running search requests
-bulk indexing
-large responses
+- long-running search requests
+- bulk indexing
+- large responses
 
-❤️ Health checks
+
+## ❤️ Health checks
 The deployment uses:
 
-startupProbe → tolerant of long startup times (large datasets)
-readinessProbe → /health
-livenessProbe → /health
+- startupProbe → tolerant of long startup times (large datasets)
+- readinessProbe → /health
+- livenessProbe → /health
 
 This prevents:
 
-restart loops during cold start
-routing traffic before Typesense is ready
+- restart loops during cold start
+- routing traffic before Typesense is ready
 
-🔑 API keys – CRITICAL NOTE
+## 🔑 API keys – CRITICAL NOTE
 Typesense supports two types of API keys:
 ✅ ADMIN API key
 Used for:
@@ -184,6 +188,6 @@ curl https://domain/health
 
 📌 References
 
-https://typesense.org/docs/
-https://kubernetes.io/docs/
-https://cert-manager.io/
+- https://typesense.org/docs/
+- https://kubernetes.io/docs/
+- https://cert-manager.io/
