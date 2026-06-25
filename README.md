@@ -173,6 +173,28 @@ Restart without data loss
 kubectl rollout restart deploy/typesense -n typesense
 ```
 
+## ⚙️ Resource Management
+
+Typesense is **memory-intensive** and relies heavily on available RAM to load and query indexes efficiently.
+
+### 🧠 Memory
+
+- Typesense keeps indexes in memory (via mmap and caching).
+- Required memory typically scales with dataset size:
+  - ~1.2–1.5× index size
+- Insufficient memory will lead to degraded performance or restarts.
+
+**Example configuration:**
+
+```yaml
+resources:
+  requests:
+    memory: "10Gi"
+  limits:
+    memory: "12Gi"
+```
+
+
 Check status
 
 ```bash

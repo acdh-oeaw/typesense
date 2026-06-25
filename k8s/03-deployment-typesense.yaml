@@ -15,18 +15,17 @@ spec:
       labels:
         app: typesense
     spec:
-      terminationGracePeriodSeconds: 60
-
       containers:
         - name: typesense
           image: typesense/typesense:30.2
-          imagePullPolicy: IfNotPresent
 
           args:
             - "--data-dir=/data"
             - "--api-key=$(TYPESENSE_API_KEY)"
-            - "--listen-port=8108"
             - "--enable-cors"
+
+          ports:
+            - containerPort: 8108
 
           env:
             - name: TYPESENSE_API_KEY
@@ -35,50 +34,42 @@ spec:
                   name: typesense-secret
                   key: TYPESENSE_API_KEY
 
-          ports:
-            - containerPort: 8108
-
           volumeMounts:
-            - name: data
+            - name: typesense-data
               mountPath: /data
 
-          lifecycle:
-            preStop:
-              exec:
-                command: ["sh", "-c", "sleep 20"]
+          # ✅ RESOURCE QUOTA
+          resources:
+            requests:
+              memory: "9Gi"
+              cpu: "500m"
+            limits:
+              memory: "12Gi"
 
+          # ✅ HEALTH CHECKS
           startupProbe:
             httpGet:
               path: /health
               port: 8108
-            periodSeconds: 5
-            timeoutSeconds: 10
-            failureThreshold: 120   # ~10 min startup
+            failureThreshold: 30
+            periodSeconds: 10
 
           readinessProbe:
             httpGet:
               path: /health
               port: 8108
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 5
 
           livenessProbe:
             httpGet:
               path: /health
               port: 8108
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 5
-
-          resources:
-            requests:
-              memory: "4Gi"
-              cpu: "500m"
-            limits:
-              memory: "8Gi"
+            initialDelaySeconds: 30
+            periodSeconds: 10
 
       volumes:
-        - name: data
+        - name: typesense-data
           persistentVolumeClaim:
             claimName: typesense-data
+
