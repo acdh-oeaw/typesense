@@ -49,7 +49,9 @@ The setup is designed to be:
 - Typesense **does not support shared data directories**
 - RWX (CephFS) causes file locking errors such as:
 
+```
 /data/db/LOCK: Resource temporarily unavailable
+```
 
 - Ceph RBD (RWO) guarantees a **single writer**, which is required by Typesense
 
@@ -136,6 +138,7 @@ This prevents:
 
 ## 🔑 API keys – CRITICAL NOTE
 Typesense supports two types of API keys:
+
 ✅ ADMIN API key
 Used for:
 
