@@ -46,26 +46,6 @@ jobs:
           kubectl get ns "$KNS" || true
 
       # --------------------------------------------------
-      # Apply Secret (Typesense API key)
-      # --------------------------------------------------
-      - name: Apply Typesense Secret
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat > k8s/02-secret-typesense.yaml <<EOF
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: typesense-secret
-            namespace: typesense
-          type: Opaque
-          stringData:
-            TYPESENSE_API_KEY: "${{ secrets.TYPESENSE_API_KEY }}"
-          EOF
-
-          kubectl apply -f k8s/02-secret-typesense.yaml
-
-      # --------------------------------------------------
       # Apply Kubernetes manifests
       # Order is IMPORTANT
       # --------------------------------------------------

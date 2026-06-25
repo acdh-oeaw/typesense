@@ -6,7 +6,7 @@ metadata:
   labels:
     ID: "20381"
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: acdh-prod
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
@@ -23,7 +23,20 @@ spec:
                 name: typesense
                 port:
                   number: 8108
+
+    - host: typesense.acdh.oeaw.ac.at
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: typesense
+                port:
+                  number: 8108
+
   tls:
     - hosts:
         - typesense.acdh-dev.oeaw.ac.at
+        - typesense.acdh.oeaw.ac.at
       secretName: typesense-acdh-dev-tls
