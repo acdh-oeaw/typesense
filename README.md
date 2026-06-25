@@ -112,7 +112,7 @@ kubectl apply -f k8s/05-ingress-typesense.yaml
 ## 🌐 Ingress & TLS
 
 - Host: `https://typesense.*`
-- TLS: `cert-manager + letsencrypt-prod`
+- TLS: `cert-manager`
 - TLS secret: `typesense-*-tls`
 
 The Ingress is tuned for:
