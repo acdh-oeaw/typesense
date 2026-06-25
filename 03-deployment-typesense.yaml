@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: typesense
+  namespace: typesense
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: typesense
+  template:
+    metadata:
+      labels:
+        app: typesense
+    spec:
+      terminationGracePeriodSeconds: 60
+
+      containers:
+        - name: typesense
+          image: typesense/typesense:30.2
+          imagePullPolicy: IfNotPresent
+
+          args:
+            - "--data-dir=/data/db"
+            - "--api-key=$(TYPESENSE_API_KEY)"
+            - "--listen-port=8108"
+            - "--enable-cors"
+
+          env:
+            - name: TYPESENSE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: typesense-secret
+                  key: TYPESENSE_API_KEY
+
+          ports:
+            - containerPort: 8108
+
+          volumeMounts:
+            - name: data
+              mountPath: /data
+
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 20"]
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8108
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 120   # ~10 min startup
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8108
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8108
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "500m"
+            limits:
+              memory: "8Gi"
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: typesense-data

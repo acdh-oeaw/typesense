@@ -1,0 +1,83 @@
+name: Deploy Typesense
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+concurrency:
+  group: typesense-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy Typesense to Kubernetes
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    permissions:
+      contents: read
+
+    steps:
+      # --------------------------------------------------
+      # Checkout repo
+      # --------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # --------------------------------------------------
+      # Configure kubectl access
+      # --------------------------------------------------
+      - name: Kubernetes credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${HOME}/.kube"
+          echo "${{ secrets.C2_KUBE_CONFIG }}" | base64 --decode > "${HOME}/.kube/config"
+          chmod 0600 "${HOME}/.kube/config"
+
+          KNS="${{ vars.KUBE_NAMESPACE }}"
+          if [[ -z "$KNS" ]]; then
+            KNS="typesense"
+          fi
+
+          echo "KUBE_NAMESPACE=$KNS" >> "$GITHUB_ENV"
+          kubectl config set-context --current --namespace="$KNS"
+          kubectl get ns "$KNS" || true
+
+      # --------------------------------------------------
+      # Apply Secret (Typesense API key)
+      # --------------------------------------------------
+      - name: Apply Typesense Secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > k8s/02-secret-typesense.yaml <<EOF
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: typesense-secret
+            namespace: typesense
+          type: Opaque
+          stringData:
+            TYPESENSE_API_KEY: "${{ secrets.TYPESENSE_API_KEY }}"
+          EOF
+
+          kubectl apply -f k8s/02-secret-typesense.yaml
+
+      # --------------------------------------------------
+      # Apply Kubernetes manifests
+      # Order is IMPORTANT
+      # --------------------------------------------------
+      - name: Deploy Kubernetes manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl apply -f k8s/00-namespace.yaml || true
+          kubectl apply -f k8s/01-pvc-typesense.yaml
+          kubectl apply -f k8s/03-deployment-typesense.yaml
+          kubectl apply -f k8s/04-service-typesense.yaml
+          kubectl apply -f k8s/05-ingress-typesense.yaml
+
+          kubectl rollout status deploy/typesense -n typesense

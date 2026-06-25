@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: typesense-data
+  namespace: typesense
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ceph-rbd-pool
+  resources:
+    requests:
+      storage: 32Gi

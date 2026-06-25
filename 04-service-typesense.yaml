@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: typesense
+  namespace: typesense
+spec:
+  type: ClusterIP
+  selector:
+    app: typesense
+  ports:
+    - name: http
+      port: 8108
+      targetPort: 8108
